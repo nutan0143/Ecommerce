@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <section id="cart_items">
+		<div class="container">
+			<div class="breadcrumbs">
+				<ol class="breadcrumb">
+				  <li><a href="#">Home</a></li>
+				  <li class="active">Shopping Cart</li>
+				</ol>
+			</div>
+			<div class="table-responsive cart_info">
+				<table class="table table-condensed">
+					<thead>
+						{% if status %}
+						<tr class="cart_menu">
+							<td class="image">Item</td>
+							<td class="description"></td>
+							<td class="price">Price</td>
+							<td class="quantity">Quantity</td>
+							<td class="total">Total</td>
+							<td></td>
+						</tr>
+						{% endif %}
+					</thead>
+					<tbody>
+						{% if status %}
+							{%for data in data%}
+								<form id="cartitem_{{data.cart_id}}" method="put">{% csrf_token %}
+								
+									<input type="hidden" name="fingerprint" id="fingerprint">
+									<input type="hidden" name="id" id="id" value="{{data.cart_id}}">
+								<tr>
+									<td class="cart_product">
+										<a href=""><img src="{% static '' %}{{data.image}}" alt=""></a>
+									</td>
+									<td class="cart_description">
+										<h4><a href="">{{data.product_name}}</a></h4>
+										<p>Web ID: {{data.cart_id}}</p>
+									</td>
+									<td class="cart_price">
+										<p>${{data.price}}</p>
+									</td>
+									<td class="cart_quantity">
+										<div class="cart_quantity_button">
+											<a class="cart_quantity_up" href="javascript:void()" onclick="additem('{{data.cart_id}}')" id="add_item_{{data.cart_id}}"> + </a>
+											<input class="cart_quantity_input" type="text" name="quantity" value="{{data.total_product}}" id="total_{{data.cart_id}}" autocomplete="off" size="2">
+											<a class="cart_quantity_down" href="javascript:void()" onclick="removeitem('{{data.cart_id}}')" id="remove_item_{{data.cart_id}}"> - </a>
+										</div>
+									</td>
+									<td class="cart_total">
+										<p class="cart_total_price">${{data.total_price}}</p>
+									</td>
+									<td class="cart_delete">
+										<a class="cart_quantity_delete" href="javascript:void()" onclick="deleteitem('{{data.cart_id}}')" id="delete_item_{{data.cart_id}}"><i class="fa fa-times"></i></a>
+									</td>
+								</tr>
+								</form>
+							{% endfor %}
+						{% else %}
+							<tr>
+								<td>
+								<div class="container text-center">
+				                    <div class="logo-404">
+				                        <a href="index.html"><img src="{% static 'images/home/e_logo2.png' %}" alt="" /></a>
+				                    </div>
+				                    <div class="content-404">
+				                        <img src="{% static 'images/404/404.png' %}" class="img-responsive" alt="" />
+				                        <h1><b>OPPS!</b> No Item found in cart</h1>
+				                    </div>
+				                </div>
+				                </td>
+							</tr>
+						{% endif %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section> <!--/#cart_items-->
+	<script>
+		var fingerprint = new Fingerprint().get()
+		$('#fingerprint').val(fingerprint)
+		base_url = window.location.href
+		function additem(id){
+			var form =$("#cartitem_"+id).serialize();
+			form_list = form.split('&')[0].split("=")
+			$.ajax({
+				url: base_url+"&type=add&id="+id,
+				type: 'put',
+				headers: { "X-CSRFToken": form_list[1]},
+				success: function (data) {
+					if(data.status){
+						alert("Item added successfully")
+						window.location.replace(base_url)
+	                    return false
+					}else{
+		                alert("Something wrong, try again!")
+		                window.location.replace(base_url)
+	                    return false
+					}
+					
+				}
+			});
+
+		}
+		function removeitem(id){
+			var form =$("#cartitem_"+id).serialize();
+			form_list = form.split('&')[0].split("=")
+			$.ajax({
+				url: base_url+"&type=decrease&id="+id,
+				type: 'put',
+				headers: { "X-CSRFToken": form_list[1]},
+				success: function (data) {
+					if(data.status){
+						alert("Quantity of item decrease successfully")
+						window.location.replace(base_url)
+	                    return false
+					}else{
+		                alert("Something wrong, try again!")
+		                window.location.replace(base_url)
+	                    return false
+					}
+				}
+			});
+		}
+		function deleteitem(id){
+			var form =$("#cartitem_"+id).serialize();
+			form_list = form.split('&')[0].split("=")
+			$.ajax({
+				url: base_url+'&id='+id,
+				type: 'delete',
+				headers: { "X-CSRFToken": form_list[1]},
+				success: function (data) {
+					if(data.status){
+						alert("Item remove from cart successfully")
+						window.location.replace(base_url)
+	                    return false
+					}else{
+		                alert("Something wrong, try again!")
+		                window.location.replace(base_url)
+	                    return false
+					}
+				}
+			});
+		}
+	</script>
+{% endblock %}

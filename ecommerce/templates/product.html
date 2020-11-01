@@ -1,0 +1,106 @@
+{% extends 'menu.html' %}
+{% load static %}
+{% block slide %}
+    <section id="advertisement">
+		<div class="container">
+            <div class="col-sm-12">
+                <div class="col-sm-9">
+                    <div class="md-form mt-0">
+                      <input class="form-control" type="text" id="id_search" placeholder="Search here" aria-label="Search">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <input type="button" name="submit" onclick="searchfun()" value="Search">
+                </div>
+            </div>
+            <div class="col-sm-12"></div>
+            <div class="col-sm-12">
+                <img src="{% static 'images/shop/advertisement.jpg' %}" alt="" />
+            </div>
+			
+		</div>
+	</section>
+{% endblock %}
+
+{% block product%}
+    <div class="col-sm-9 padding-right">
+        <div class="features_items"><!--features_items-->
+            {% if type == 'all' %}
+                <h2 class="title text-center">Features Items</h2>
+            {% elif type == 'men' %}
+                <h2 class="title text-center">Men Items</h2>
+            {% elif type == 'women' %}
+                <h2 class="title text-center">Women Items</h2>
+            {% elif type == 'kid' %}
+                <h2 class="title text-center">Kids Items</h2>   
+            {% else %}
+                <h2 class="title text-center">House Hold Items</h2>
+            {% endif %}
+            {% if status %}
+                {% for data in product_data %}
+                <div class="col-sm-4">
+                    <div class="product-image-wrapper">
+                        <form method="post" id="product_data_{{data.id}}">
+                        {% csrf_token %}
+                        <div class="single-products">
+                            <div class="productinfo text-center">
+                                <input type="hidden" name="fingerprint" id="fingerprint">
+                                <input type="hidden" name="product_id" id="product_id" value="{{data.id}}">
+                                <img src="{% static '' %}{{data.image}}" alt="" />
+                                <h2>${{data.price}}</h2>
+                                <p>{{data.product_name}}</p>
+                                <a href="javascript:void()" onclick="addtocart('{{data.id}}')" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                            </div>
+                            <div class="product-overlay">
+                                <div class="overlay-content">
+                                    <h2>${{data.price}}</h2>
+                                    <p>{{data.decription}}</p>
+                                    <a href="javascript:void()" onclick="addtocart('{{data.id}}')" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                                </div>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="container text-center">
+                    <div class="logo-404">
+                        <a href="index.html"><img src="{% static 'images/home/e_logo2.png' %}" alt="" /></a>
+                    </div>
+                    <div class="content-404">
+                        <img src="{% static 'images/404/404.png' %}" class="img-responsive" alt="" />
+                        <h1><b>OPPS!</b> No Item found</h1>
+                    </div>
+                </div>
+            {% endif %}
+        </div><!--features_items-->
+    </div>
+    <script>
+        var fingerprint = new Fingerprint().get()
+        $("#fingerprint").val(fingerprint)
+        function searchfun(){
+            var base_url = window.location['origin']
+            type = localStorage.getItem("type");
+            if (!type){type="all"}
+            search = document.getElementById('id_search').value 
+            url = base_url+'/product?type='+type+"&search="+search
+            window.location.replace(url)
+        }
+        function addtocart(id){
+            data_id = "#product_data_"+id
+            var form = $(data_id).serialize();
+            url = window.location.href
+            $.ajax({
+                url: url+"&fingerprint="+fingerprint,
+                data: form,
+                type: 'post',
+                success: function (data) {
+                    alert(data.message)
+                    window.location.replace(url)
+                    return false
+                }
+            });
+        }
+    </script>
+{% endblock %}

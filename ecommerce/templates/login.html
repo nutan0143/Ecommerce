@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head%}
+
+{% endblock %}
+{% block content %}
+	<section id="form"><!--form-->
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-4 col-sm-offset-1">
+					<div class="login-form"><!--login form-->
+						<h2>Login to your account</h2>
+						<form action="{% url 'app:login' %}" id="loginuser" method="POST">
+							{% csrf_token %}
+							<input type="email" name="email_address" id="id_email_address" placeholder="Email Address" required/>
+							<input type="password" name="password" id="id_password" placeholder="Password" required/>
+							<input type="hidden" id="fingerprint" name="fingerprint">
+							<button type="submit" id="userlogin" class="btn btn-default">Login</button>
+						</form>
+					</div><!--/login form-->
+				</div>
+				<div class="col-sm-1">
+					<h2 class="or">OR</h2>
+				</div>
+				<div class="col-sm-4">
+					<div class="signup-form"><!--sign up form-->
+						<h2>New User Signup!</h2>
+						<form  id="signupform" method="POST">
+							{% csrf_token %}
+							<input type="text" name="name" placeholder="Name" required/>
+							<input type="email" name="email_address" placeholder="Email Address" required/>
+							<input type="password" name="password" placeholder="Password" required/>
+							<button type="submit" id="usersignup" onclick="Signup()" class="btn btn-default">Signup</button>
+						</form>
+					</div><!--/sign up form-->
+				</div>
+			</div>
+		</div>
+	</section><!--/form-->
+	<script>
+		var fingerprint = new Fingerprint().get()
+		$('#fingerprint').val(fingerprint)
+		var base_url = window.location['origin']
+		function Signup(){
+			var form = $("#signupform").serialize();
+			$.ajax({
+				url: base_url+'/signup',
+				data: form,
+				type: 'post',
+				success: function (data) {
+					alert(data.message)
+					return true
+				}
+			});
+		};
+		function myFunction(message) {
+		  alert(message);
+		}
+	</script>
+{% endblock %}

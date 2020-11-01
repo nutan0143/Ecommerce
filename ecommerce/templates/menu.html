@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block header-bottom %} {% endblock %}
+{% block content %}
+<section>
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-3">
+					<div class="left-sidebar">
+						<h2>Category</h2>
+						<div class="panel-group category-products" id="accordian"><!--category-productsr-->
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h4 class="panel-title"><a href="javascript:void()" onclick="menhref()" id="id_product_men">Men</a></h4>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h4 class="panel-title"><a href="javascript:void()" onclick="womenhref()" id="id_product_women">Women</a></h4>
+								</div>
+							</div>
+
+                            <div class="panel panel-default">
+								<div class="panel-heading">
+									<h4 class="panel-title"><a href="javascript:void()" onclick="kidhref()" id="id_product_kid">Kids</a></h4>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h4 class="panel-title"><a href="javascript:void()" onclick="househref()" id="id_product_house">Households</a></h4>
+								</div>
+							</div>
+						</div><!--/category-products-->
+
+						<div class="price-range"><!--price-range-->
+							<h2>Price Range</h2>
+							<div class="well">
+								<input type="radio" id="price1" name="price" onclick="pricefunction()" value="0-100">
+								<label for="male">0-100</label><br>
+								<input type="radio" id="price2" name="price" onclick="pricefunction()" value="101-500">
+								<label for="male">101-500</label><br>
+								<input type="radio" id="price3" name="price" onclick="pricefunction()" value="501-1500">
+								<label for="male">501-1500</label><br>
+								<input type="radio" id="price4" name="price" onclick="pricefunction()" value="1501-4000">
+								<label for="male">1501-4000</label><br>
+							</div>
+						</div><!--/price-range-->
+
+						<div class="shipping text-center"><!--shipping-->
+							<img src="{% static 'images/home/shipping.jpg' %}" alt="" />
+						</div><!--/shipping-->
+					</div>
+				</div>
+				{% block product %}{% endblock %}
+			</div>
+		</div>
+	</section>
+	<script>
+		// debugger;
+		var base_url = window.location['origin']
+		function menhref(){
+    		url = base_url+'/product?type=men'
+    		localStorage.setItem("type", "men");
+    		document.getElementById("id_product_men").href = url
+    		return false
+    	}
+    	function womenhref(){
+    		url = base_url+'/product?type=women'
+    		localStorage.setItem("type", "women");
+    		document.getElementById("id_product_women").href = url
+    		return false
+    	}
+    	function kidhref(){
+    		url = base_url+'/product?type=kid'
+    		localStorage.setItem("type", "kid");
+    		document.getElementById("id_product_kid").href = url
+    		return false
+    	}
+    	function househref(){
+    		url = base_url+'/product?type=house'
+    		localStorage.setItem("type", "house");
+    		document.getElementById("id_product_house").href = url
+    		return false
+    	}
+    	function pricefunction(){
+    		type = localStorage.getItem("type");
+    		if (!type){type="all"}
+    		var price = document.getElementsByName("price")
+    		for(i = 0; i < price.length; i++) { 
+                if(price[i].checked) {
+                	count = i+1
+                	id = "price"+count.toString()
+                	price=document.getElementById(id).value 
+                }
+            }
+    		price_list = price.split('-');
+    		url = base_url+'/product?type='+type+"&min_price="+price_list[0]+"&max_price="+price_list[1]
+    		window.location.replace(url)
+    	}
+	</script>
+{% endblock %}
