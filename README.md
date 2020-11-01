@@ -27,9 +27,9 @@ Use the test.py file
 
 4. Activate environment
 
-		a. env\Script\activate
+		a. env\Script\activate # for window
 
-		b. source env/bin/activate
+		b. source env/bin/activate #for mac and ubuntu
 
 5. Install all requirement
 
